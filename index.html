@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guruss Kitti By Hangata</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Écran de verrouillage PIN -->
+<div id="pin-screen">
+    <div class="pin-logo">GURUSS KITTI</div>
+    <div class="pin-dots">
+        <div class="pin-dot" id="d0"></div>
+        <div class="pin-dot" id="d1"></div>
+        <div class="pin-dot" id="d2"></div>
+        <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-pad" id="pin-pad">
+        <button class="pin-key" onclick="pinPress(1)">1</button>
+        <button class="pin-key" onclick="pinPress(2)">2</button>
+        <button class="pin-key" onclick="pinPress(3)">3</button>
+        <button class="pin-key" onclick="pinPress(4)">4</button>
+        <button class="pin-key" onclick="pinPress(5)">5</button>
+        <button class="pin-key" onclick="pinPress(6)">6</button>
+        <button class="pin-key" onclick="pinPress(7)">7</button>
+        <button class="pin-key" onclick="pinPress(8)">8</button>
+        <button class="pin-key" onclick="pinPress(9)">9</button>
+        <button class="pin-key" style="visibility:hidden"></button>
+        <button class="pin-key" onclick="pinPress(0)">0</button>
+        <button class="pin-key del" onclick="pinDel()"><i class="fas fa-delete-left"></i></button>
+    </div>
+    <div class="pin-error" id="pin-error">Code incorrect</div>
+</div>
+
+<!-- Application principale -->
+<div id="app">
+    <!-- Barre supérieure -->
+    <div class="topbar">
+        <div class="brand">Guruss Kitti</div>
+        <div class="topbar-actions">
+            <button class="btn btn-ghost btn-icon" onclick="toggleDark()">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <button class="btn btn-plum btn-icon" onclick="openSheet('sheet-mandat')" style="animation: gentlePulse 2s infinite;">
+                <i class="fas fa-coins"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Vue Accueil -->
+    <div id="view-home" class="view active">
+        <div class="card balance-card">
+            <div class="card-body">
+                <div class="balance-label">Reste à vivre</div>
+                <div class="balance-amount" id="hero-balance">0 F</div>
+                <div class="balance-grid">
+                    <div class="b-stat">
+                        <div class="lbl">Mandat net</div>
+                        <div class="val" id="net-val">0 F</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl">Dépenses totales</div>
+                        <div class="val" id="exp-total-val">0 F</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl">Jours restants</div>
+                        <div class="val" id="days-left-val">0j</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl">Budget / jour</div>
+                        <div class="val" id="daily-val">0 F</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Ardoise en cours</span>
+            </div>
+            <div class="dette-info-badge">
+                <i class="fas fa-info-circle"></i>
+                Les dettes n'impactent le solde qu'au règlement
+            </div>
+            <div class="list-item">
+                <div class="item-icon cat-dette">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">Total des dettes</div>
+                    <div class="item-sub" id="debt-count-label">0 ardoise(s)</div>
+                </div>
+                <div class="item-amount" style="color:var(--warning)" id="debt-total-preview">0 F</div>
+            </div>
+        </div>
+        
+        <button class="btn btn-ghost btn-block" style="border-color: var(--plum);" onclick="cloturerMandat()">
+            <i class="fas fa-archive"></i> Clôturer & archiver le mois
+        </button>
+    </div>
+
+    <!-- Vue Opérations -->
+    <div id="view-ops" class="view">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📆 Dépenses mensuelles</span>
+                <button class="btn btn-plum btn-icon" style="width:44px;height:44px;border-radius:30px" onclick="openSheet('sheet-depense')">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="expense-list"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🛒 Marché (dimanche)</span>
+                <button class="btn btn-plum btn-icon" style="width:44px;height:44px;border-radius:30px" onclick="openSheet('sheet-marche')">
+                    <i class="fas fa-leaf"></i>
+                </button>
+            </div>
+            <div id="marche-list"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📝 Dettes (ardoise)</span>
+                <button class="btn btn-ghost btn-icon" style="width:44px;height:44px;border-radius:30px" onclick="openSheet('sheet-dette')">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="dette-info-badge" style="margin-top:4px;">
+                <i class="fas fa-circle-check"></i>
+                Appuie sur ✓ pour régler — le solde diminuera alors
+            </div>
+            <div id="debt-list"></div>
+        </div>
+    </div>
+
+    <!-- Vue Archives -->
+    <div id="view-archive" class="view">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📦 Archives mensuelles</span>
+            </div>
+            <div id="archive-list"></div>
+        </div>
+    </div>
+
+    <!-- Vue Réglages -->
+    <div id="view-settings" class="view">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">🔐 Sécurité & style</span>
+            </div>
+            <div class="list-item" onclick="openSheet('sheet-pin')">
+                <div class="item-icon" style="background:rgba(124,58,237,0.2); color:var(--plum);">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">Modifier code PIN</div>
+                    <div class="item-sub">4 chiffres sécurisés</div>
+                </div>
+                <div class="item-amount">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation inférieure -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home',this)">
+            <i class="fas fa-compass"></i>Accueil
+        </button>
+        <button class="nav-item" onclick="switchTab('ops',this)">
+            <i class="fas fa-cart-shopping"></i>Opérations
+        </button>
+        <button class="nav-item" onclick="switchTab('archive',this)">
+            <i class="fas fa-clock"></i>Archives
+        </button>
+        <button class="nav-item" onclick="switchTab('settings',this)">
+            <i class="fas fa-sliders-h"></i>Réglages
+        </button>
+    </nav>
+</div>
+
+<!-- Modales (Sheets) -->
+<div class="overlay" id="sheet-mandat" onclick="closeIfOverlay(event,'sheet-mandat')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title">Nouveau mandat</div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label>Montant reçu (FCFA)</label>
+                <input type="number" id="m-amount" placeholder="Ex: 200000">
+            </div>
+            <div class="fg">
+                <label>Frais de retrait</label>
+                <input type="number" id="m-fees" placeholder="Ex: 2500">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" onclick="saveMandat()">Valider</button>
+            <button class="btn btn-ghost" onclick="closeSheets()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="sheet-dette" onclick="closeIfOverlay(event,'sheet-dette')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title">Ajouter une dette</div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label>Créancier</label>
+                <input type="text" id="d-label" placeholder="Ex: Poissonnière">
+            </div>
+            <div class="fg">
+                <label>Montant (FCFA)</label>
+                <input type="number" id="d-amount" placeholder="Ex: 3000">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" onclick="saveDette()">Ajouter</button>
+            <button class="btn btn-ghost" onclick="closeSheets()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="sheet-depense" onclick="closeIfOverlay(event,'sheet-depense')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title">Dépense courante</div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label>Catégorie</label>
+                <select id="exp-cat">
+                    <option value="Nourriture">🍚 Riz / Alimentation</option>
+                    <option value="Savon/Hygiène">🧼 Savon / Hygiène</option>
+                    <option value="Huile">🫒 Huile</option>
+                    <option value="Magi/Assaisonnement">🍲 Maggi / Sel</option>
+                    <option value="Transport">🚗 Transport</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label>Description</label>
+                <input type="text" id="exp-desc" placeholder="Ex: Riz 5kg">
+            </div>
+            <div class="fg">
+                <label>Montant</label>
+                <input type="number" id="exp-amount" placeholder="FCFA">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" onclick="saveDepense()">Enregistrer</button>
+            <button class="btn btn-ghost" onclick="closeSheets()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="sheet-marche" onclick="closeIfOverlay(event,'sheet-marche')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title">Marché du dimanche</div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label>Produit (ex: légumes, poisson)</label>
+                <input type="text" id="marche-produit" placeholder="Ex: Tomates, oignons">
+            </div>
+            <div class="fg">
+                <label>Prix (FCFA)</label>
+                <input type="number" id="marche-prix" placeholder="Montant">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" onclick="saveMarche()">Ajouter au marché</button>
+            <button class="btn btn-ghost" onclick="closeSheets()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="sheet-pin" onclick="closeIfOverlay(event,'sheet-pin')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title">Modifier code PIN</div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label>Ancien code</label>
+                <input type="password" id="pin-old" maxlength="4">
+            </div>
+            <div class="fg">
+                <label>Nouveau code (4 chiffres)</label>
+                <input type="password" id="pin-new" maxlength="4">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" onclick="updatePin()">Changer</button>
+            <button class="btn btn-ghost" onclick="closeSheets()">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="sheet-archive-details" onclick="closeIfOverlay(event,'sheet-archive-details')">
+    <div class="sheet">
+        <span class="sheet-handle"></span>
+        <div class="sheet-title" id="arch-det-title"></div>
+        <div class="sheet-content" id="arch-det-content"></div>
+        <div class="sheet-actions">
+            <button class="btn btn-ghost" onclick="closeSheets()">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast">
+    <i class="fas fa-check-circle"></i> <span id="toast-msg"></span>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
