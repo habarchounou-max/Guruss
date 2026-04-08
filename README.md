@@ -73,15 +73,6 @@ L'application utilise un design système épuré basé sur des tons violets (Plu
 
 ---
 
-## 📸 Screenshots
-
-*(Ajoute ici tes captures d'écran après les avoir uploadées dans un dossier `/img`)*
-
-| Écran de Verrouillage | Dashboard Premium | Gestion des Dettes |
-| :---: | :---: | :---: |
-| ![PIN](https://via.placeholder.com/200x400?text=PIN+Screen) | ![Home](https://via.placeholder.com/200x400?text=Dashboard) | ![Dettes](https://via.placeholder.com/200x400?text=Dettes) |
-
----
 
 ## ⚙️ Installation Rapide
 
