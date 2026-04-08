@@ -5,31 +5,57 @@
 ![JavaScript](https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)
 
-**Guruss Kitti Pro** est une solution de gestion financière personnelle ultra-moderne, conçue avec une approche **Mobile-First** et **Privacy-First**. Elle permet de suivre ses finances avec une précision chirurgicale tout en offrant une interface digne des meilleures applications bancaires actuelles.
+**Guruss Kitti Pro** est une application web de gestion financière personnelle "Premium", conçue pour offrir une expérience utilisateur fluide, sécurisée et totalement privée. Développée avec une approche **Mobile-First**, elle transforme le suivi des dépenses en une interface moderne, intuitive et réactive.
 
 ---
 
-## 🚀 Aperçu
-L'application se distingue par son interface épurée utilisant des **Bottom Sheets** (panneaux coulissants) pour une navigation fluide au pouce, parfaitement adaptée aux smartphones.
+## 📸 Aperçu de l'Interface
 
-> **Note :** L'application est entièrement côté client. Aucune donnée n'est envoyée à un serveur tiers, garantissant une confidentialité totale de vos finances.
+L'application utilise un design système épuré basé sur des tons violets (Plum) et une navigation par **Bottom Sheets** pour une ergonomie optimale.
+
+<p align="center">
+  <img src="1000463720.jpg" width="280" alt="Écran de Verrouillage PIN" />
+  <img src="1000463719.jpg" width="280" alt="Tableau de bord principal" />
+  <img src="1000463721.jpg" width="280" alt="Gestion des dépenses et dettes" />
+</p>
 
 ---
 
-## ✨ Points Forts & Fonctionnalités
+## ✨ Fonctionnalités Clés
 
 ### 🛡️ Sécurité & Confidentialité
-- **Authentification par PIN** : Accès verrouillé par un code de 4 chiffres sécurisé.
-- **Stockage Local** : Utilisation du `LocalStorage` pour une persistance des données sans base de données externe.
-- **Privacy First** : Vos dépenses ne regardent que vous.
+- **Accès Verrouillé** : Protection par code PIN personnalisé (par défaut `1234`).
+- **Zéro Serveur** : Toutes les données sont stockées localement via `LocalStorage`. Aucune donnée n'est collectée ou partagée.
+- **Backup JSON** : Exportez et importez votre base de données complète pour ne jamais perdre vos informations.
 
-### 💰 Gestion des Flux Financiers
-- **Multi-catégories** : Mandats, Abonnements (Netflix, Internet), Dépenses quotidiennes et Marché.
-- **Gestion des Dettes** : Module de suivi des créanciers et débiteurs avec option de règlement rapide.
-- **Calculateur de Frais** : Intégration native des frais sur les transactions.
+### 💰 Gestion Intelligente
+- **Suivi des Flux** : Gestion des mandats, abonnements récurrents (Netflix, Internet) et dépenses journalières.
+- **Gestion des Dettes** : Module dédié pour suivre les créanciers et les débiteurs.
+- **Calculateur Intégré** : Gestion automatique des frais de transaction et mise à jour du solde en temps réel.
 
-### 📊 Reporting & Maintenance
-- **Export PDF Professionnel** : Générez des rapports détaillés de vos sessions grâce à `html2pdf.js`.
+### 📊 Expérience Premium
+- **Export PDF** : Génération de rapports financiers élégants grâce à `html2pdf.js`.
+- **Thème Adaptatif** : Mode sombre (Dark Mode) inclus pour un confort visuel optimal.
+- **Feedback Haptique** : Vibrations discrètes lors des interactions pour une sensation "App Native".
+
+---
+
+## 🛠️ Stack Technique
+
+- **Frontend** : HTML5 sémantique & CSS3 (Architecture par variables personnalisées).
+- **Logique** : Vanilla JavaScript (ES6+) — *Performance maximale sans frameworks lourds.*
+- **UX/UI** : 
+  - **Fonts** : Syne (Titres) & Inter (Lecture).
+  - **Icons** : FontAwesome 6.4.0.
+  - **Animation** : Transitions fluides et panneaux coulissants.
+
+---
+
+## 🚀 Installation
+
+1. **Clonage**
+   ```bash
+   git clone [https://github.com/votre-username/guruss-kitti-pro.git](https://github.com/votre-username/guruss-kitti-pro.git)
 - **Système d'Archives** : Clôturez vos mois ou sessions pour garder un historique propre.
 - **Backup JSON** : Exportez et importez votre base de données complète en un clic.
 
