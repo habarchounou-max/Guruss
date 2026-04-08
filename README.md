@@ -14,9 +14,9 @@
 L'application utilise un design système épuré basé sur des tons violets (Plum) et une navigation par **Bottom Sheets** pour une ergonomie optimale.
 
 <p align="center">
-  <img Screenshot_20260408_112127_Spck Editor.jpg" width="280" alt="Écran de Verrouillage PIN" />
+  <img src="Screenshot_20260408_112127_Spck Editor.jpg" width="280" alt="Écran de Verrouillage PIN" />
   <img src="Screenshot_20260408_112138_Spck Editor.jpg" width="280" alt="Tableau de bord principal" />
-  <img src="src="Screenshot_20260408_112148_Spck Editor.jpg" width="280" alt="Gestion des dépenses et dettes" />
+  <img src="Screenshot_20260408_112148_Spck Editor.jpg" width="280" alt="Gestion des dépenses et dettes" />
 </p>
 
 ---
