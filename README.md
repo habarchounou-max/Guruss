@@ -58,7 +58,7 @@ L'application utilise un design système épuré basé sur des tons violets (Plu
 
 1. **Clonage**
    ```bash
-   git clone [https://github.com/votre-username/guruss-kitti-pro.git](https://github.com/votre-username/guruss-kitti-pro.git)
+   git clone [https://github.com/habarchounou-max/guruss-kitti-pro.git](https://github.com/habarchounou-max/guruss-kitti-pro.git)
 - **Système d'Archives** : Clôturez vos mois ou sessions pour garder un historique propre.
 - **Backup JSON** : Exportez et importez votre base de données complète en un clic.
 
