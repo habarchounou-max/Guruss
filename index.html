@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#09090B" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+    <meta name="color-scheme" content="dark light">
+    <meta name="author" content="Bichara Abakar">
+    <meta name="description" content="Guruss Kitti Pro - Application de gestion financière premium PWA">
+    <meta name="keywords" content="finance, budget, gestion, PWA, mobile money, épargne">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Guruss Kitti">
+    <meta name="format-detection" content="telephone=no">
+    <title>Guruss Kitti Pro | Gestion financière premium</title>
+
+    <!-- Favicon SVG inline -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%238B5CF6'/><stop offset='1' stop-color='%23F59E0B'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text x='50' y='70' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>G</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%238B5CF6'/><stop offset='1' stop-color='%23F59E0B'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text x='50' y='70' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>G</text></svg>">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Style principal -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- html2pdf.js (chargé en différé) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+</head>
+<body>
+
+<!-- ==================== HALOS LUMINEUX DE FOND ==================== -->
+<div class="bg-halo" aria-hidden="true">
+    <div class="halo halo-1"></div>
+    <div class="halo halo-2"></div>
+    <div class="halo halo-3"></div>
+    <div class="halo halo-4"></div>
+    <div class="halo halo-5"></div>
+</div>
+
+<!-- ==================== APPSHELL ==================== -->
+<div id="app" style="display:none;">
+
+    <!-- ==================== TOPBAR DYNAMIC ISLAND ==================== -->
+    <header class="topbar" role="banner">
+        <div class="topbar-inner">
+            <div class="brand-container">
+                <div class="brand-logo" aria-hidden="true">
+                    <i class="fas fa-gem"></i>
+                    <div class="brand-logo-shine"></div>
+                </div>
+                <div class="brand-text">
+                    <div class="brand">Guruss Kitti</div>
+                    <div class="signature-badge">
+                        <span class="signature-dot"></span>
+                        <span class="signature-text">par Bichara Abakar</span>
+                    </div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" id="privacy-toggle" title="Mode incognito" aria-label="Masquer les montants">
+                    <i id="privacy-icon" class="fas fa-eye"></i>
+                </button>
+                <button class="icon-btn" id="theme-toggle" title="Thème clair/sombre" aria-label="Changer de thème">
+                    <i id="theme-icon" class="fas fa-sun"></i>
+                </button>
+                <button class="icon-btn icon-btn-gold" id="info-btn" title="À propos" aria-label="À propos">
+                    <i class="fas fa-crown"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== VUE ACCUEIL ==================== -->
+    <main id="view-home" class="view active" role="main" aria-label="Vue d'accueil">
+
+        <!-- Barre Magique NLP -->
+        <section class="magic-bar" aria-label="Saisie intelligente">
+            <div class="magic-bar-icon" aria-hidden="true">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </div>
+            <input
+                type="text"
+                id="magic-input"
+                class="magic-input"
+                placeholder="Ex: 5000 transport aujourd'hui"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Décrivez votre dépense en langage naturel">
+            <button class="magic-bar-submit" id="magic-submit" aria-label="Valider la saisie magique">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <div class="magic-hints" id="magic-hints">
+            <span class="magic-hint">💡 Essayez : "2000 beignets ce matin"</span>
+        </div>
+
+        <!-- Bannière de bienvenue -->
+        <section class="welcome-banner" aria-labelledby="welcome-heading">
+            <div class="welcome-glow" aria-hidden="true"></div>
+            <div class="welcome-grid" aria-hidden="true"></div>
+
+            <div class="welcome-header">
+                <div class="welcome-icon" aria-hidden="true">
+                    <i class="fas fa-hand-sparkles"></i>
+                </div>
+                <div class="welcome-texts">
+                    <div class="welcome-kicker">Assistant financier</div>
+                    <h2 id="welcome-heading" class="welcome-title">
+                        <span id="welcome-username">Bienvenue</span>
+                    </h2>
+                </div>
+            </div>
+
+            <p class="welcome-subtitle">Définissez votre mandat pour activer le suivi intelligent</p>
+
+            <div class="step-indicator" id="step-indicator" role="list" aria-label="Progression du tutoriel">
+                <div class="step" role="listitem">
+                    <div class="step-dot" id="step1-dot">1</div>
+                    <div class="step-label">Mandat</div>
+                </div>
+                <div class="step-line" id="step1-line"></div>
+                <div class="step" role="listitem">
+                    <div class="step-dot" id="step2-dot">2</div>
+                    <div class="step-label">Dépenses</div>
+                </div>
+                <div class="step-line" id="step2-line"></div>
+                <div class="step" role="listitem">
+                    <div class="step-dot" id="step3-dot">3</div>
+                    <div class="step-label">Suivi</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Streak & Santé Financière -->
+        <section class="health-status" id="health-status-display" aria-label="Santé financière">
+            <div class="health-icon" id="health-icon" aria-hidden="true">
+                <i class="fas fa-heart-pulse"></i>
+            </div>
+            <div class="health-text">
+                <div class="health-title" id="health-title">En attente de données</div>
+                <div class="health-value" id="health-value">Définissez votre mandat pour commencer</div>
+            </div>
+            <div class="health-badge" id="health-badge">
+                <span id="health-badge-text">—</span>
+            </div>
+        </section>
+
+        <!-- Streak Card -->
+        <section class="streak-card" id="streak-display" aria-label="Série de jours">
+            <div class="streak-flame" id="streak-flame" aria-hidden="true">🔥</div>
+            <div class="streak-text">
+                <div class="streak-title" id="streak-title">0 jour</div>
+                <div class="streak-sub" id="streak-sub">Commencez votre série aujourd'hui</div>
+            </div>
+            <div class="streak-record">
+                <span class="streak-record-label">Record</span>
+                <span class="streak-record-value" id="streak-record">0j</span>
+            </div>
+        </section>
+
+        <!-- Statut mandat -->
+        <section class="mandat-status" id="mandat-status-display" aria-label="Statut du mandat">
+            <div class="mandat-status-icon not-set" id="mandat-status-icon" aria-hidden="true">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="mandat-status-text">
+                <div class="status-title" id="mandat-status-title">Aucun mandat défini</div>
+                <div class="status-value" id="mandat-status-value">Cliquez ci-dessous pour commencer</div>
+            </div>
+            <div class="mandat-status-arrow" aria-hidden="true">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </section>
+
+        <!-- Carte action principale -->
+        <div class="hero-action" id="quick-mandat-btn" role="button" tabindex="0" aria-label="Définir mon mandat">
+            <div class="hero-action-shine" aria-hidden="true"></div>
+            <div class="hero-action-icon" aria-hidden="true">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="hero-action-text">
+                <h3>Définir mon mandat</h3>
+                <p>Étape 1 sur 3 · Montant reçu ce mois-ci</p>
+            </div>
+            <div class="hero-action-cta" aria-hidden="true">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- Carte Solde Premium -->
+        <section class="card balance-card" aria-label="Reste à vivre">
+            <div class="balance-decoration" aria-hidden="true">
+                <div class="balance-orb balance-orb-1"></div>
+                <div class="balance-orb balance-orb-2"></div>
+                <div class="balance-orb balance-orb-3"></div>
+            </div>
+
+            <div class="card-body">
+                <div class="balance-label">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span>Reste à vivre</span>
+                </div>
+                <div class="balance-amount" id="hero-balance">0 F</div>
+
+                <!-- Jauge de budget circulaire -->
+                <div class="budget-gauge-wrap">
+                    <svg class="budget-gauge" viewBox="0 0 120 120" aria-hidden="true">
+                        <circle class="gauge-track" cx="60" cy="60" r="52"></circle>
+                        <circle class="gauge-progress" id="gauge-progress" cx="60" cy="60" r="52"></circle>
+                    </svg>
+                    <div class="gauge-label">
+                        <span id="gauge-percent">0%</span>
+                        <small>utilisé</small>
+                    </div>
+                </div>
+
+                <div class="balance-grid">
+                    <div class="b-stat">
+                        <div class="lbl"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Mandat net</div>
+                        <div class="val" id="net-val">0 F</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl"><i class="fas fa-shopping-cart" aria-hidden="true"></i> Dépenses</div>
+                        <div class="val" id="exp-total-val">0 F</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl"><i class="fas fa-calendar" aria-hidden="true"></i> Jours restants</div>
+                        <div class="val" id="days-left-val">0j</div>
+                    </div>
+                    <div class="b-stat">
+                        <div class="lbl"><i class="fas fa-chart-line" aria-hidden="true"></i> Budget / jour</div>
+                        <div class="val" id="daily-val">0 F</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projection Financière -->
+        <section class="card projection-card" aria-label="Projection financière">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-plum" aria-hidden="true">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Projection</div>
+                        <div class="card-subtitle">Estimation à rythme actuel</div>
+                    </div>
+                </div>
+            </div>
+            <div class="projection-body">
+                <div class="projection-item">
+                    <div class="projection-label">Dépense moyenne / jour</div>
+                    <div class="projection-value" id="avg-daily-spend">0 F</div>
+                </div>
+                <div class="projection-item">
+                    <div class="projection-label">Épuisement estimé</div>
+                    <div class="projection-value projection-warning" id="depletion-date">—</div>
+                </div>
+                <div class="projection-bar-container">
+                    <div class="projection-bar" id="projection-bar"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Graphique de répartition -->
+        <section class="card chart-card" aria-label="Répartition des dépenses">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-plum" aria-hidden="true">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Répartition</div>
+                        <div class="card-subtitle">Vue synthétique des dépenses</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-canvas-wrap">
+                    <svg id="spending-chart" viewBox="0 0 200 200" aria-label="Graphique de répartition" role="img"></svg>
+                </div>
+                <div class="chart-legend" id="chart-legend"></div>
+            </div>
+        </section>
+
+        <!-- Multi-Portefeuilles -->
+        <section class="card wallets-card" aria-label="Portefeuilles">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-gold" aria-hidden="true">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Portefeuilles</div>
+                        <div class="card-subtitle">Répartition du solde</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="wallet" aria-label="Ajouter un portefeuille">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="wallets-grid" id="wallets-grid"></div>
+        </section>
+
+        <!-- Objectifs d'Épargne -->
+        <section class="card savings-card" aria-label="Cagnottes">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-success" aria-hidden="true">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Cagnottes</div>
+                        <div class="card-subtitle">Objectifs d'épargne</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="savings" aria-label="Ajouter une cagnotte">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="savings-list" class="savings-list"></div>
+        </section>
+
+        <!-- Carte ardoise -->
+        <section class="card" aria-label="Ardoise en cours">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-warning" aria-hidden="true">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Ardoise en cours</div>
+                        <div class="card-subtitle">Dettes à régler ce mois</div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-badge">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span>Les dettes n'impactent le solde qu'au règlement</span>
+            </div>
+            <div class="list-item">
+                <div class="item-icon cat-dette" aria-hidden="true">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">Total des dettes</div>
+                    <div class="item-sub" id="debt-count-label">0 ardoise</div>
+                </div>
+                <div class="item-amount" style="color:var(--gold-500)" id="debt-total-preview">0 F</div>
+            </div>
+        </section>
+
+        <!-- Actions rapides -->
+        <div class="section-head">
+            <div class="section-head-text">
+                <div class="section-kicker">Raccourcis</div>
+                <h3>Actions rapides</h3>
+            </div>
+            <span class="tooltip-icon" title="Ajoutez rapidement vos opérations" aria-hidden="true">
+                <i class="fas fa-question-circle"></i>
+            </span>
+        </div>
+
+        <div class="quick-actions-grid">
+            <button class="btn-quick btn-quick-plum" id="quick-expense-btn" aria-label="Ajouter une dépense journalière">
+                <div class="btn-quick-icon" aria-hidden="true">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="btn-quick-text">
+                    <span class="btn-quick-title">Dépense rapide</span>
+                    <span class="btn-quick-sub">Journalière</span>
+                </div>
+            </button>
+            <button class="btn-quick btn-quick-gold" id="quick-debt-btn" aria-label="Noter une ardoise">
+                <div class="btn-quick-icon" aria-hidden="true">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <div class="btn-quick-text">
+                    <span class="btn-quick-title">Noter ardoise</span>
+                    <span class="btn-quick-sub">Dette</span>
+                </div>
+            </button>
+            <button class="btn-quick btn-quick-emerald" id="quick-income-btn" aria-label="Ajouter une entrée d'argent">
+                <div class="btn-quick-icon" aria-hidden="true">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="btn-quick-text">
+                    <span class="btn-quick-title">Entrée</span>
+                    <span class="btn-quick-sub">Revenu</span>
+                </div>
+            </button>
+            <button class="btn-quick btn-quick-blue" id="quick-savings-btn" aria-label="Épargner">
+                <div class="btn-quick-icon" aria-hidden="true">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <div class="btn-quick-text">
+                    <span class="btn-quick-title">Épargner</span>
+                    <span class="btn-quick-sub">Cagnotte</span>
+                </div>
+            </button>
+        </div>
+
+        <button class="btn btn-success btn-block btn-lg" id="cloture-btn">
+            <i class="fas fa-archive" aria-hidden="true"></i>
+            <span>Clôturer & archiver le mois</span>
+        </button>
+
+        <footer class="app-footer">
+            <div class="footer-signature">
+                <span class="footer-brand">Guruss Kitti Pro</span>
+                <span class="footer-dot" aria-hidden="true"></span>
+                <span class="footer-version">v3.0 ULTIME</span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ==================== VUE OPÉRATIONS ==================== -->
+    <main id="view-ops" class="view" role="main" aria-label="Vue opérations">
+
+        <div class="section-head">
+            <div class="section-head-text">
+                <div class="section-kicker">Gestion</div>
+                <h3>Opérations</h3>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters-bar" id="filters-bar">
+            <button class="filter-chip active" data-filter="all" aria-label="Tout afficher">Tout</button>
+            <button class="filter-chip" data-filter="journalieres" aria-label="Dépenses journalières">Journalières</button>
+            <button class="filter-chip" data-filter="depenses" aria-label="Dépenses mensuelles">Mensuelles</button>
+            <button class="filter-chip" data-filter="marche" aria-label="Marché">Marché</button>
+            <button class="filter-chip" data-filter="incomes" aria-label="Entrées">Entrées</button>
+            <button class="filter-chip" data-filter="dettes" aria-label="Dettes">Dettes</button>
+        </div>
+
+        <!-- Abonnements -->
+        <section class="card" data-category="abonnements">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-info" aria-hidden="true">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Abonnements</div>
+                        <div class="card-subtitle">Contrats récurrents</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="abonnement" aria-label="Ajouter un abonnement">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="info-badge">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span>Déduit du solde uniquement si la date actuelle est incluse</span>
+            </div>
+            <div id="abonnement-list"></div>
+        </section>
+
+        <!-- Dépenses mensuelles -->
+        <section class="card" data-category="depenses">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-danger" aria-hidden="true">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Dépenses mensuelles</div>
+                        <div class="card-subtitle">Charges fixes du mois</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="depense" aria-label="Ajouter une dépense">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="expense-list"></div>
+        </section>
+
+        <!-- Dépenses journalières -->
+        <section class="card" data-category="journalieres">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-success" aria-hidden="true">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Dépenses journalières</div>
+                        <div class="card-subtitle">Au quotidien</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="journaliere" aria-label="Ajouter une dépense journalière">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="journaliere-list"></div>
+        </section>
+
+        <!-- Entrées d'argent -->
+        <section class="card" data-category="incomes">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-emerald" aria-hidden="true">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Entrées d'argent</div>
+                        <div class="card-subtitle">Revenus additionnels</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="income" aria-label="Ajouter une entrée">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="income-list"></div>
+        </section>
+
+        <!-- Marché -->
+        <section class="card" data-category="marche">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-plum" aria-hidden="true">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Marché</div>
+                        <div class="card-subtitle">Achats du dimanche</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm" data-sheet="marche" aria-label="Ajouter un achat marché">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div id="marche-list"></div>
+        </section>
+
+        <!-- Dettes -->
+        <section class="card" data-category="dettes">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-warning" aria-hidden="true">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Dettes</div>
+                        <div class="card-subtitle">Ardoises à régler</div>
+                    </div>
+                </div>
+                <button class="icon-btn icon-btn-sm icon-btn-gold" data-sheet="dette" aria-label="Ajouter une dette">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="info-badge">
+                <i class="fas fa-circle-check" aria-hidden="true"></i>
+                <span>Appuyez sur la coche pour régler - le solde diminuera alors</span>
+            </div>
+            <div id="debt-list"></div>
+        </section>
+    </main>
+
+    <!-- ==================== VUE ARCHIVES ==================== -->
+    <main id="view-archive" class="view" role="main" aria-label="Vue archives">
+
+        <div class="section-head">
+            <div class="section-head-text">
+                <div class="section-kicker">Historique</div>
+                <h3>Archives</h3>
+            </div>
+        </div>
+
+        <section class="card">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-plum" aria-hidden="true">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Mois clôturés</div>
+                        <div class="card-subtitle">Historique complet</div>
+                    </div>
+                </div>
+            </div>
+            <div class="archive-actions">
+                <button class="btn btn-plum btn-block" id="export-all-pdf">
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i>
+                    <span>Exporter toutes les archives</span>
+                </button>
+                <button class="btn btn-ghost btn-block" id="export-db-btn">
+                    <i class="fas fa-database" aria-hidden="true"></i>
+                    <span>Exporter la base de données</span>
+                </button>
+            </div>
+            <div id="archive-list"></div>
+        </section>
+    </main>
+
+    <!-- ==================== VUE RÉGLAGES ==================== -->
+    <main id="view-settings" class="view" role="main" aria-label="Vue réglages">
+
+        <div class="section-head">
+            <div class="section-head-text">
+                <div class="section-kicker">Configuration</div>
+                <h3>Réglages</h3>
+            </div>
+        </div>
+
+        <section class="card">
+            <div class="card-header">
+                <div class="card-title-group">
+                    <div class="card-icon-wrap card-icon-muted" aria-hidden="true">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Paramètres</div>
+                        <div class="card-subtitle">Personnalisation et sauvegarde</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="author-badge">
+                <div class="author-avatar" aria-hidden="true">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="author-info">
+                    <div class="author-label">Développé par</div>
+                    <div class="author-name">Bichara Abakar</div>
+                </div>
+            </div>
+
+            <div class="settings-list">
+                <button class="settings-item" id="edit-name-btn">
+                    <div class="item-icon" style="background:rgba(245,158,11,0.15); color:var(--gold-500);" aria-hidden="true">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Modifier mon nom</div>
+                        <div class="item-sub" id="current-name-label">Non défini</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="password-settings-btn">
+                    <div class="item-icon" style="background:rgba(139,92,246,0.15); color:var(--plum-500);" aria-hidden="true">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Sécurité par mot de passe</div>
+                        <div class="item-sub" id="password-status-label">Désactivé</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="budget-alert-settings-btn">
+                    <div class="item-icon" style="background:rgba(244,63,94,0.15); color:var(--rose-500);" aria-hidden="true">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Alertes de budget</div>
+                        <div class="item-sub" id="budget-alert-status-label">Seuil : 80%</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="currency-settings-btn">
+                    <div class="item-icon" style="background:rgba(16,185,129,0.15); color:var(--emerald-500);" aria-hidden="true">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Devise</div>
+                        <div class="item-sub" id="currency-label">XAF (F)</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="import-db-btn">
+                    <div class="item-icon" style="background:rgba(16,185,129,0.15); color:var(--emerald-500);" aria-hidden="true">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Importer des données</div>
+                        <div class="item-sub">Restaurer depuis un fichier JSON</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="reset-tutorial-btn">
+                    <div class="item-icon" style="background:rgba(245,158,11,0.15); color:var(--gold-500);" aria-hidden="true">
+                        <i class="fas fa-rotate-left"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Réinitialiser le tutoriel</div>
+                        <div class="item-sub">Recommencer la découverte</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+
+                <button class="settings-item" id="reset-data-btn">
+                    <div class="item-icon" style="background:rgba(244,63,94,0.15); color:var(--rose-500);" aria-hidden="true">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">Effacer toutes les données</div>
+                        <div class="item-sub">Action irréversible</div>
+                    </div>
+                    <i class="fas fa-chevron-right settings-chevron" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <input type="file" id="import-file" accept=".json" style="display:none" aria-hidden="true">
+
+            <div class="info-badge" style="margin-top: 16px;">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                <span>Vos données sont stockées localement et ne quittent jamais votre appareil</span>
+            </div>
+        </section>
+
+        <footer class="app-footer">
+            <div class="footer-signature">
+                <span class="footer-brand">Guruss Kitti Pro</span>
+                <span class="footer-dot" aria-hidden="true"></span>
+                <span class="footer-version">v3.0 ULTIME</span>
+            </div>
+            <div class="footer-copy">Copyright 2026 - Tous droits réservés</div>
+        </footer>
+    </main>
+
+    <!-- ==================== BOTTOM NAVIGATION ==================== -->
+    <nav class="bottom-nav" aria-label="Navigation principale">
+        <button class="nav-item active" data-tab="home" aria-label="Accueil">
+            <span class="nav-icon-wrap">
+                <i class="fas fa-compass" aria-hidden="true"></i>
+            </span>
+            <span class="nav-label">Accueil</span>
+        </button>
+        <button class="nav-item" data-tab="ops" aria-label="Opérations">
+            <span class="nav-icon-wrap">
+                <i class="fas fa-cart-shopping" aria-hidden="true"></i>
+            </span>
+            <span class="nav-label">Opérations</span>
+        </button>
+        <button class="nav-item" data-tab="archive" aria-label="Archives">
+            <span class="nav-icon-wrap">
+                <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+            </span>
+            <span class="nav-label">Archives</span>
+        </button>
+        <button class="nav-item" data-tab="settings" aria-label="Réglages">
+            <span class="nav-icon-wrap">
+                <i class="fas fa-sliders" aria-hidden="true"></i>
+            </span>
+            <span class="nav-label">Réglages</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ==================== MODALE PREMIÈRE CONNEXION ==================== -->
+<div class="overlay" id="sheet-first-launch" role="dialog" aria-modal="true" aria-labelledby="sheet-first-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-hero">
+            <div class="sheet-hero-icon" aria-hidden="true">
+                <i class="fas fa-hand-sparkles"></i>
+            </div>
+            <div class="sheet-hero-kicker">Première utilisation</div>
+            <h2 class="sheet-hero-title" id="sheet-first-title">Bienvenue</h2>
+            <p class="sheet-hero-sub">Dites-nous comment vous appeler pour personnaliser votre expérience</p>
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="first-name-input"><i class="fas fa-user" aria-hidden="true"></i> Votre nom</label>
+                <input type="text" id="first-name-input" placeholder="Ex: Bichara" maxlength="40" autocomplete="given-name">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum btn-lg btn-block" id="save-first-name-btn">
+                <span>Commencer</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE À PROPOS ==================== -->
+<div class="overlay" id="sheet-about" role="dialog" aria-modal="true" aria-labelledby="about-name">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="about-content">
+            <div class="about-avatar" aria-hidden="true">
+                <i class="fas fa-user-graduate"></i>
+                <div class="about-avatar-ring"></div>
+            </div>
+            <h2 class="about-name" id="about-name">Bichara Abakar</h2>
+            <p class="about-role">Développeur & Designer</p>
+            <div class="about-info">
+                <div class="about-info-row">
+                    <i class="fas fa-check-circle" style="color: var(--emerald-500);" aria-hidden="true"></i>
+                    <span>Application de gestion financière premium</span>
+                </div>
+                <div class="about-info-row">
+                    <i class="fas fa-check-circle" style="color: var(--emerald-500);" aria-hidden="true"></i>
+                    <span>Version 3.0 ULTIME</span>
+                </div>
+                <div class="about-info-row">
+                    <i class="fas fa-check-circle" style="color: var(--emerald-500);" aria-hidden="true"></i>
+                    <span>Architecture relationnelle & Saisie NLP</span>
+                </div>
+                <div class="about-info-row">
+                    <i class="fas fa-check-circle" style="color: var(--emerald-500);" aria-hidden="true"></i>
+                    <span>Développé avec passion en 2026</span>
+                </div>
+            </div>
+            <div class="about-trophy">
+                <i class="fas fa-trophy" style="color: var(--gold-500);" aria-hidden="true"></i>
+                <span>Projet noté 10/10</span>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum close-sheet">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE MANDAT ==================== -->
+<div class="overlay" id="sheet-mandat" role="dialog" aria-modal="true" aria-labelledby="sheet-mandat-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-mandat-title">
+            <i class="fas fa-coins" style="color: var(--gold-500);" aria-hidden="true"></i> Nouveau mandat
+        </div>
+        <div class="sheet-content">
+            <div class="info-badge" style="margin: 0 0 20px 0; width: 100%;">
+                <i class="fas fa-lightbulb" aria-hidden="true"></i>
+                <span>C'est votre revenu principal du mois</span>
+            </div>
+            <div class="fg">
+                <label for="m-amount"><i class="fas fa-money-bill-wave" aria-hidden="true"></i> Montant reçu</label>
+                <input type="number" id="m-amount" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="50000">50K</button>
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="100000">100K</button>
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="150000">150K</button>
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="200000">200K</button>
+                    <button type="button" class="quick-amount" data-target="m-amount" data-value="300000">300K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="m-fees"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> Frais de retrait</label>
+                <input type="number" id="m-fees" placeholder="0" value="0" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="0">0</button>
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="500">500</button>
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="2500">2.5K</button>
+                    <button type="button" class="quick-amount" data-target="m-fees" data-value="5000">5K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="m-wallet"><i class="fas fa-wallet" aria-hidden="true"></i> Portefeuille de destination</label>
+                <select id="m-wallet" class="wallet-select"></select>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-mandat">
+                <i class="fas fa-check" aria-hidden="true"></i> Valider
+            </button>
+            <button class="btn btn-ghost close-sheet">
+                <i class="fas fa-times" aria-hidden="true"></i> Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE ABONNEMENT ==================== -->
+<div class="overlay" id="sheet-abonnement" role="dialog" aria-modal="true" aria-labelledby="sheet-abo-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-abo-title">
+            <i class="fas fa-sync" style="color: #3B82F6;" aria-hidden="true"></i> Contrat / Abonnement
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="abo-nom"><i class="fas fa-tag" aria-hidden="true"></i> Nom du contrat</label>
+                <input type="text" id="abo-nom" placeholder="Ex: Abonnement Pain" list="abo-nom-suggestions">
+                <datalist id="abo-nom-suggestions">
+                    <option value="Abonnement Pain">
+                    <option value="Abonnement Lait">
+                    <option value="Abonnement Eau">
+                    <option value="Abonnement Électricité">
+                    <option value="Abonnement Internet">
+                    <option value="Abonnement Téléphone">
+                    <option value="Abonnement Cantine">
+                    <option value="Abonnement Transport">
+                    <option value="Abonnement Scolaire">
+                    <option value="Abonnement Loyer">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="abo-montant"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant total</label>
+                <input type="number" id="abo-montant" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="15000">15K</button>
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="abo-montant" data-value="50000">50K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="abo-debut"><i class="fas fa-calendar-plus" aria-hidden="true"></i> Date de début</label>
+                <input type="date" id="abo-debut">
+            </div>
+            <div class="fg">
+                <label for="abo-fin"><i class="fas fa-calendar-minus" aria-hidden="true"></i> Date de fin</label>
+                <input type="date" id="abo-fin">
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-abonnement">Enregistrer</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE DÉPENSE MENSUELLE ==================== -->
+<div class="overlay" id="sheet-depense" role="dialog" aria-modal="true" aria-labelledby="sheet-dep-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-dep-title">
+            <i class="fas fa-receipt" style="color: var(--rose-500);" aria-hidden="true"></i> Dépense mensuelle
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="exp-cat"><i class="fas fa-tag" aria-hidden="true"></i> Catégorie</label>
+                <select id="exp-cat">
+                    <optgroup label="Alimentation">
+                        <option value="Riz">Riz</option>
+                        <option value="Huile">Huile</option>
+                        <option value="Sucre">Sucre</option>
+                        <option value="Farine">Farine</option>
+                        <option value="Pâtes">Pâtes / Spaghetti</option>
+                        <option value="Magi/Assaisonnement">Maggi / Sel / Épices</option>
+                        <option value="Thé/Café">Thé / Café / Lait</option>
+                    </optgroup>
+                    <optgroup label="Hygiène & Entretien">
+                        <option value="Savon">Savon / Détergent</option>
+                        <option value="Dentifrice">Dentifrice / Brosse</option>
+                        <option value="Papier">Papier hygiénique</option>
+                        <option value="Eau de javel">Eau de javel / Désinfectant</option>
+                    </optgroup>
+                    <optgroup label="Maison">
+                        <option value="Bois/Charbon">Bois / Charbon</option>
+                        <option value="Gaz">Recharge gaz</option>
+                        <option value="Électricité">Électricité</option>
+                        <option value="Eau">Facture eau</option>
+                        <option value="Loyer">Loyer</option>
+                    </optgroup>
+                    <optgroup label="Transport & Communication">
+                        <option value="Transport">Transport</option>
+                        <option value="Carburant">Carburant</option>
+                        <option value="Téléphone">Crédit téléphone</option>
+                        <option value="Internet">Internet</option>
+                    </optgroup>
+                    <optgroup label="Santé & Éducation">
+                        <option value="Médicaments">Médicaments</option>
+                        <option value="Consultation">Consultation médicale</option>
+                        <option value="Scolarité">Scolarité / Fournitures</option>
+                    </optgroup>
+                    <optgroup label="Autres">
+                        <option value="Habillement">Habillement</option>
+                        <option value="Cadeau">Cadeau / Événement</option>
+                        <option value="Autre">Autre</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="fg">
+                <label for="exp-desc"><i class="fas fa-pen" aria-hidden="true"></i> Description</label>
+                <input type="text" id="exp-desc" placeholder="Ex: Riz 5kg" list="exp-desc-suggestions">
+                <datalist id="exp-desc-suggestions">
+                    <option value="Riz 5kg">
+                    <option value="Riz 25kg">
+                    <option value="Huile 1L">
+                    <option value="Huile 5L">
+                    <option value="Sucre 1kg">
+                    <option value="Savon de ménage">
+                    <option value="Savon de toilette">
+                    <option value="Dentifrice">
+                    <option value="Eau de javel">
+                    <option value="Bois de chauffe">
+                    <option value="Charbon">
+                    <option value="Recharge gaz">
+                    <option value="Crédit téléphone">
+                    <option value="Transport quotidien">
+                    <option value="Médicaments">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="exp-amount"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant</label>
+                <input type="number" id="exp-amount" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="500">500</button>
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="exp-amount" data-value="25000">25K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="exp-wallet"><i class="fas fa-wallet" aria-hidden="true"></i> Portefeuille</label>
+                <select id="exp-wallet" class="wallet-select"></select>
+            </div>
+            <div class="fg">
+                <label for="exp-receipt"><i class="fas fa-camera" aria-hidden="true"></i> Reçu (optionnel)</label>
+                <div class="receipt-upload">
+                    <input type="file" id="exp-receipt" accept="image/*" capture="environment" hidden>
+                    <label for="exp-receipt" class="receipt-upload-btn">
+                        <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                        <span id="exp-receipt-label">Ajouter un reçu</span>
+                    </label>
+                    <div class="receipt-preview" id="exp-receipt-preview"></div>
+                </div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-expense">Enregistrer</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE DÉPENSE JOURNALIÈRE ==================== -->
+<div class="overlay" id="sheet-journaliere" role="dialog" aria-modal="true" aria-labelledby="sheet-jour-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-jour-title">
+            <i class="fas fa-coffee" style="color: var(--emerald-500);" aria-hidden="true"></i> Dépense journalière
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="jour-motif"><i class="fas fa-pen" aria-hidden="true"></i> Motif de la dépense</label>
+                <input type="text" id="jour-motif" placeholder="Ex: Beignets, Taxi..." list="jour-motif-suggestions">
+                <datalist id="jour-motif-suggestions">
+                    <option value="Petit déjeuner">
+                    <option value="Beignets">
+                    <option value="Pain">
+                    <option value="Thé / Café">
+                    <option value="Eau">
+                    <option value="Jus / Boisson">
+                    <option value="Déjeuner">
+                    <option value="Dîner">
+                    <option value="Snack">
+                    <option value="Fruits">
+                    <option value="Légumes">
+                    <option value="Taxi">
+                    <option value="Moto / Keke">
+                    <option value="Bus">
+                    <option value="Crédit téléphone">
+                    <option value="Pharmacie">
+                    <option value="Divers">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="jour-montant"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant</label>
+                <input type="number" id="jour-montant" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="100">100</button>
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="200">200</button>
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="500">500</button>
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="jour-montant" data-value="5000">5K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="jour-wallet"><i class="fas fa-wallet" aria-hidden="true"></i> Portefeuille</label>
+                <select id="jour-wallet" class="wallet-select"></select>
+            </div>
+            <div class="fg">
+                <label for="jour-essential">
+                    <input type="checkbox" id="jour-essential" class="essential-checkbox">
+                    <span>Dépense essentielle</span>
+                </label>
+                <div class="fg-hint">Les dépenses non essentielles préservent votre streak 🔥</div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-journaliere">Ajouter</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE ENTRÉE D'ARGENT ==================== -->
+<div class="overlay" id="sheet-income" role="dialog" aria-modal="true" aria-labelledby="sheet-inc-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-inc-title">
+            <i class="fas fa-arrow-down" style="color: var(--emerald-500);" aria-hidden="true"></i> Entrée d'argent
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="inc-source"><i class="fas fa-pen" aria-hidden="true"></i> Source</label>
+                <input type="text" id="inc-source" placeholder="Ex: Vente, Don, Salaire..." list="inc-source-suggestions">
+                <datalist id="inc-source-suggestions">
+                    <option value="Salaire">
+                    <option value="Prime">
+                    <option value="Vente">
+                    <option value="Don">
+                    <option value="Aide familiale">
+                    <option value="Remboursement">
+                    <option value="Freelance">
+                    <option value="Autre">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="inc-amount"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant</label>
+                <input type="number" id="inc-amount" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="50000">50K</button>
+                    <button type="button" class="quick-amount" data-target="inc-amount" data-value="100000">100K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="inc-wallet"><i class="fas fa-wallet" aria-hidden="true"></i> Portefeuille de destination</label>
+                <select id="inc-wallet" class="wallet-select"></select>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-emerald" id="save-income">Ajouter</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE MARCHÉ ==================== -->
+<div class="overlay" id="sheet-marche" role="dialog" aria-modal="true" aria-labelledby="sheet-marche-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-marche-title">
+            <i class="fas fa-basket-shopping" style="color: var(--plum-500);" aria-hidden="true"></i> Marché du dimanche
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="marche-produit"><i class="fas fa-carrot" aria-hidden="true"></i> Produit</label>
+                <input type="text" id="marche-produit" placeholder="Ex: Tomates, oignons..." list="marche-produit-suggestions">
+                <datalist id="marche-produit-suggestions">
+                    <option value="Tomates">
+                    <option value="Oignons">
+                    <option value="Pommes de terre">
+                    <option value="Carottes">
+                    <option value="Choux">
+                    <option value="Aubergines">
+                    <option value="Gombos">
+                    <option value="Feuilles de manioc">
+                    <option value="Feuilles de baobab">
+                    <option value="Oseille">
+                    <option value="Épices">
+                    <option value="Piment">
+                    <option value="Ail">
+                    <option value="Gingembre">
+                    <option value="Poisson frais">
+                    <option value="Poisson fumé">
+                    <option value="Viande">
+                    <option value="Poulet">
+                    <option value="Œufs">
+                    <option value="Haricots">
+                    <option value="Arachides">
+                    <option value="Fruits">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="marche-prix"><i class="fas fa-money-bill" aria-hidden="true"></i> Prix</label>
+                <input type="number" id="marche-prix" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="500">500</button>
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="marche-prix" data-value="15000">15K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="marche-wallet"><i class="fas fa-wallet" aria-hidden="true"></i> Portefeuille</label>
+                <select id="marche-wallet" class="wallet-select"></select>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-marche">Ajouter au marché</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE DETTE ==================== -->
+<div class="overlay" id="sheet-dette" role="dialog" aria-modal="true" aria-labelledby="sheet-dette-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-dette-title">
+            <i class="fas fa-hand-holding-heart" style="color: var(--gold-500);" aria-hidden="true"></i> Ajouter une dette
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="d-label"><i class="fas fa-user" aria-hidden="true"></i> Créancier</label>
+                <input type="text" id="d-label" placeholder="Ex: Poissonnière" list="d-label-suggestions">
+                <datalist id="d-label-suggestions">
+                    <option value="Poissonnière">
+                    <option value="Boucher">
+                    <option value="Boutique du coin">
+                    <option value="Boulangerie">
+                    <option value="Vendeur de légumes">
+                    <option value="Vendeur de fruits">
+                    <option value="Pharmacie">
+                    <option value="Transporteur">
+                    <option value="Voisin">
+                    <option value="Ami">
+                    <option value="Famille">
+                    <option value="Collègue">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="d-amount"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant</label>
+                <input type="number" id="d-amount" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="500">500</button>
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="d-amount" data-value="25000">25K</button>
+                </div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-gold" id="save-dette">Ajouter</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE PORTEFEUILLE ==================== -->
+<div class="overlay" id="sheet-wallet" role="dialog" aria-modal="true" aria-labelledby="sheet-wallet-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-wallet-title">
+            <i class="fas fa-wallet" style="color: var(--gold-500);" aria-hidden="true"></i> Nouveau portefeuille
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="w-name"><i class="fas fa-tag" aria-hidden="true"></i> Nom du portefeuille</label>
+                <input type="text" id="w-name" placeholder="Ex: Wave, Airtel, Compte BNI...">
+            </div>
+            <div class="fg">
+                <label for="w-type"><i class="fas fa-palette" aria-hidden="true"></i> Type</label>
+                <select id="w-type">
+                    <option value="cash">Espèces (Cash)</option>
+                    <option value="mobile">Mobile Money</option>
+                    <option value="bank">Compte Bancaire</option>
+                    <option value="savings">Épargne / Cagnotte</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label for="w-balance"><i class="fas fa-money-bill" aria-hidden="true"></i> Solde initial</label>
+                <input type="number" id="w-balance" placeholder="0" value="0" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="0">0</button>
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="50000">50K</button>
+                    <button type="button" class="quick-amount" data-target="w-balance" data-value="100000">100K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="w-icon"><i class="fas fa-icons" aria-hidden="true"></i> Icône</label>
+                <select id="w-icon">
+                    <option value="fa-money-bill-wave">💵 Espèces</option>
+                    <option value="fa-mobile-screen">📱 Mobile</option>
+                    <option value="fa-building-columns">🏦 Banque</option>
+                    <option value="fa-piggy-bank">🐷 Épargne</option>
+                    <option value="fa-credit-card">💳 Carte</option>
+                    <option value="fa-coins">🪙 Pièces</option>
+                </select>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-gold" id="save-wallet">Créer</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE CAGNOTTE ==================== -->
+<div class="overlay" id="sheet-savings" role="dialog" aria-modal="true" aria-labelledby="sheet-savings-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-savings-title">
+            <i class="fas fa-piggy-bank" style="color: var(--emerald-500);" aria-hidden="true"></i> Nouvelle cagnotte
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="s-name"><i class="fas fa-tag" aria-hidden="true"></i> Nom de l'objectif</label>
+                <input type="text" id="s-name" placeholder="Ex: Épargne urgence, Projet..." list="s-name-suggestions">
+                <datalist id="s-name-suggestions">
+                    <option value="Épargne d'urgence">
+                    <option value="Achat téléphone">
+                    <option value="Projet immobilier">
+                    <option value="Voyage">
+                    <option value="Éducation enfants">
+                    <option value="Fonds de commerce">
+                    <option value="Santé">
+                    <option value="Cérémonie">
+                </datalist>
+            </div>
+            <div class="fg">
+                <label for="s-target"><i class="fas fa-bullseye" aria-hidden="true"></i> Montant cible</label>
+                <input type="number" id="s-target" placeholder="Objectif à atteindre" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="50000">50K</button>
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="100000">100K</button>
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="250000">250K</button>
+                    <button type="button" class="quick-amount" data-target="s-target" data-value="500000">500K</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label for="s-deadline"><i class="fas fa-calendar" aria-hidden="true"></i> Date cible (optionnel)</label>
+                <input type="date" id="s-deadline">
+            </div>
+            <div class="fg">
+                <label for="s-initial"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant initial</label>
+                <input type="number" id="s-initial" placeholder="0" value="0" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="0">0</button>
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="s-initial" data-value="50000">50K</button>
+                </div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-emerald" id="save-savings">Créer la cagnotte</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE TRANSFERT CAGNOTTE ==================== -->
+<div class="overlay" id="sheet-savings-transfer" role="dialog" aria-modal="true" aria-labelledby="sheet-transfer-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-transfer-title">
+            <i class="fas fa-exchange-alt" style="color: var(--emerald-500);" aria-hidden="true"></i> Alimenter la cagnotte
+        </div>
+        <div class="sheet-content">
+            <div class="info-badge" style="margin: 0 0 20px 0; width: 100%;">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span id="transfer-info-text">Transfert du solde principal vers la cagnotte</span>
+            </div>
+            <input type="hidden" id="transfer-savings-id">
+            <div class="fg">
+                <label for="transfer-amount"><i class="fas fa-money-bill" aria-hidden="true"></i> Montant à transférer</label>
+                <input type="number" id="transfer-amount" placeholder="Saisir ou choisir un montant" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="1000">1K</button>
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="2000">2K</button>
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="5000">5K</button>
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="10000">10K</button>
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="25000">25K</button>
+                    <button type="button" class="quick-amount" data-target="transfer-amount" data-value="50000">50K</button>
+                </div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-emerald" id="save-transfer">Transférer</button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE ARCHIVE DETAILS ==================== -->
+<div class="overlay" id="sheet-archive-details" role="dialog" aria-modal="true" aria-labelledby="arch-det-title">
+    <div class="sheet sheet-large">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="arch-det-title"></div>
+        <div class="sheet-content" id="arch-det-content"></div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="export-single-pdf">
+                <i class="fas fa-file-pdf" aria-hidden="true"></i> Exporter en PDF
+            </button>
+            <button class="btn btn-ghost close-sheet">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE VERROUILLAGE ==================== -->
+<div class="overlay" id="sheet-password-lock" role="dialog" aria-modal="true" aria-labelledby="sheet-lock-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-hero">
+            <div class="sheet-hero-icon sheet-hero-icon-plum" aria-hidden="true">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div class="sheet-hero-kicker">Accès sécurisé</div>
+            <h2 class="sheet-hero-title" id="sheet-lock-title">Application verrouillée</h2>
+            <p class="sheet-hero-sub">Entrez votre mot de passe pour continuer</p>
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="unlock-password"><i class="fas fa-key" aria-hidden="true"></i> Mot de passe</label>
+                <input type="password" id="unlock-password" placeholder="********" autocomplete="off">
+            </div>
+            <p id="unlock-error" class="unlock-error" style="display: none;" role="alert">
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                <span>Mot de passe incorrect</span>
+            </p>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum btn-lg btn-block" id="unlock-btn">
+                <i class="fas fa-unlock" aria-hidden="true"></i>
+                <span>Déverrouiller</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE MOT DE PASSE SETTINGS ==================== -->
+<div class="overlay" id="sheet-password-settings" role="dialog" aria-modal="true" aria-labelledby="sheet-pwd-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-pwd-title">
+            <i class="fas fa-shield-alt" style="color: var(--plum-500);" aria-hidden="true"></i> Sécurité
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="pwd-current"><i class="fas fa-lock" aria-hidden="true"></i> Mot de passe actuel</label>
+                <input type="password" id="pwd-current" placeholder="********" autocomplete="off">
+            </div>
+            <div class="fg">
+                <label for="pwd-new"><i class="fas fa-key" aria-hidden="true"></i> Nouveau mot de passe</label>
+                <input type="password" id="pwd-new" placeholder="Minimum 4 caractères" autocomplete="off">
+            </div>
+            <div class="fg">
+                <label for="pwd-confirm"><i class="fas fa-check-double" aria-hidden="true"></i> Confirmer</label>
+                <input type="password" id="pwd-confirm" placeholder="********" autocomplete="off">
+            </div>
+            <div class="info-badge" style="margin: 0 0 16px 0; width: 100%;">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span>Laissez vide pour désactiver le verrouillage</span>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-password-btn">
+                <i class="fas fa-save" aria-hidden="true"></i> Enregistrer
+            </button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE ALERTES BUDGET ==================== -->
+<div class="overlay" id="sheet-budget-alerts" role="dialog" aria-modal="true" aria-labelledby="sheet-alerts-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-alerts-title">
+            <i class="fas fa-bell" style="color: var(--rose-500);" aria-hidden="true"></i> Alertes de budget
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="alert-threshold"><i class="fas fa-percentage" aria-hidden="true"></i> Seuil d'alerte (%)</label>
+                <input type="number" id="alert-threshold" placeholder="80" value="80" min="10" max="100" inputmode="numeric">
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="50">50%</button>
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="70">70%</button>
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="80">80%</button>
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="90">90%</button>
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="95">95%</button>
+                    <button type="button" class="quick-amount" data-target="alert-threshold" data-value="100">100%</button>
+                </div>
+            </div>
+            <div class="fg">
+                <label class="switch-label">
+                    <span><i class="fas fa-volume-high" aria-hidden="true"></i> Retour haptique</span>
+                    <input type="checkbox" id="alert-haptic" checked>
+                </label>
+            </div>
+            <div class="fg">
+                <label class="switch-label">
+                    <span><i class="fas fa-bell" aria-hidden="true"></i> Notification visuelle</span>
+                    <input type="checkbox" id="alert-visual" checked>
+                </label>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-alerts-btn">
+                <i class="fas fa-save" aria-hidden="true"></i> Enregistrer
+            </button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE DEVISE ==================== -->
+<div class="overlay" id="sheet-currency" role="dialog" aria-modal="true" aria-labelledby="sheet-currency-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-currency-title">
+            <i class="fas fa-coins" style="color: var(--gold-500);" aria-hidden="true"></i> Devise
+        </div>
+        <div class="sheet-content">
+            <div class="fg">
+                <label for="currency-select"><i class="fas fa-globe" aria-hidden="true"></i> Sélectionnez votre devise</label>
+                <select id="currency-select">
+                    <option value="XAF|F">FCFA (F) - Afrique Centrale</option>
+                    <option value="XOF|F">FCFA (F) - Afrique de l'Ouest</option>
+                    <option value="EUR|€">Euro (€)</option>
+                    <option value="USD|$">Dollar US ($)</option>
+                    <option value="MAD|DH">Dirham (DH)</option>
+                    <option value="DZD|DA">Dinar Algérien (DA)</option>
+                    <option value="TND|DT">Dinar Tunisien (DT)</option>
+                    <option value="NGN|₦">Naira (₦)</option>
+                    <option value="GHS|₵">Cedi (₵)</option>
+                    <option value="CDF|FC">Franc Congolais (FC)</option>
+                </select>
+            </div>
+            <div class="info-badge" style="margin: 0; width: 100%;">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <span>La devise sera appliquée à tous les montants de l'application</span>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-currency-btn">
+                <i class="fas fa-save" aria-hidden="true"></i> Enregistrer
+            </button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALE CONFIRMATION NLP ==================== -->
+<div class="overlay" id="sheet-nlp-confirm" role="dialog" aria-modal="true" aria-labelledby="sheet-nlp-title">
+    <div class="sheet">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-title" id="sheet-nlp-title">
+            <i class="fas fa-wand-magic-sparkles" style="color: var(--plum-500);" aria-hidden="true"></i> Confirmer la saisie
+        </div>
+        <div class="sheet-content">
+            <div class="info-badge" style="margin: 0 0 16px 0; width: 100%;">
+                <i class="fas fa-sparkles" aria-hidden="true"></i>
+                <span>Voici ce que j'ai compris, vérifiez avant de valider</span>
+            </div>
+            <div class="nlp-preview" id="nlp-preview"></div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-plum" id="save-nlp">
+                <i class="fas fa-check" aria-hidden="true"></i> Valider
+            </button>
+            <button class="btn btn-ghost close-sheet">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div id="toast" role="status" aria-live="polite">
+    <i class="fas fa-check-circle" aria-hidden="true"></i>
+    <span id="toast-msg"></span>
+</div>
+
+<!-- ==================== SCRIPT PRINCIPAL ==================== -->
+<script src="script.js" defer></script>
+</body>
+</html>
